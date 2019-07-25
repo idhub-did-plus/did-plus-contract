@@ -6,11 +6,12 @@ import "./AddressSet/AddressSet.sol";
 /// @title The ERC-1484 Identity Registry.
 /// @author Noah Zinsmeister
 /// @author Andy Chorlian
+/// @author Zaakin Yao
 contract IdentityRegistry is SignatureVerifier {
     using AddressSet for AddressSet.Set;
 
 
-    // Identity Data Structure and Parameters //////////////////////////////////////////////////////////////////////////
+    // 数字身份数据结构和参数 //////////////////////////////////////////////////////////////////////////
 
     struct Identity {
         address recoveryAddress;
@@ -26,12 +27,12 @@ contract IdentityRegistry is SignatureVerifier {
     uint public maxAssociatedAddresses = 50;
 
 
-    // Signature Timeout ///////////////////////////////////////////////////////////////////////////////////////////////
+    // 签名时间有效期 ///////////////////////////////////////////////////////////////////////////////////////////////
 
     uint public signatureTimeout = 1 days;
 
-    /// @dev Enforces that the passed timestamp is within signatureTimeout seconds of now.
-    /// @param timestamp The timestamp to check the validity of.
+    /// @dev 强制传入的时间戳在当前区块时间戳的`signatureTimeout`内。
+    /// @param timestamp 待校验的时间戳。
     modifier ensureSignatureTimeValid(uint timestamp) {
         require(
             // solium-disable-next-line security/no-block-members
@@ -41,7 +42,7 @@ contract IdentityRegistry is SignatureVerifier {
     }
 
 
-    // Recovery Address Change Logging /////////////////////////////////////////////////////////////////////////////////
+    // 恢复地址更改的日志记录 /////////////////////////////////////////////////////////////////////////////////
 
     struct RecoveryAddressChange {
         uint timestamp;
@@ -51,7 +52,7 @@ contract IdentityRegistry is SignatureVerifier {
     mapping (uint => RecoveryAddressChange) private recoveryAddressChangeLogs;
 
 
-    // Recovery Logging ////////////////////////////////////////////////////////////////////////////////////////////////
+    // 恢复操作的日志记录 ////////////////////////////////////////////////////////////////////////////////////////////////
 
     struct Recovery {
         uint timestamp;
@@ -61,52 +62,52 @@ contract IdentityRegistry is SignatureVerifier {
     mapping (uint => Recovery) private recoveryLogs;
 
 
-    // Recovery Timeout ////////////////////////////////////////////////////////////////////////////////////////////////
+    // 恢复操作的时间有效期 ////////////////////////////////////////////////////////////////////////////////////////////////
 
     uint public recoveryTimeout = 2 weeks;
 
-    /// @dev Checks if the passed EIN has changed their recovery address within recoveryTimeout seconds of now.
+    /// @dev 检查传入的EIN是否已经在`recoveryTimeout`秒内更改了其恢复地址。
     function canChangeRecoveryAddress(uint ein) private view returns (bool) {
         // solium-disable-next-line security/no-block-members
         return block.timestamp > recoveryAddressChangeLogs[ein].timestamp + recoveryTimeout;
     }
 
-    /// @dev Checks if the passed EIN has recovered within recoveryTimeout seconds of now.
+    /// @dev 检查传入的EIN是否已在`recoveryTimeout`秒内执行了恢复操作。
     function canRecover(uint ein) private view returns (bool) {
         // solium-disable-next-line security/no-block-members
         return block.timestamp > recoveryLogs[ein].timestamp + recoveryTimeout;
     }
 
 
-    // Identity View Functions /////////////////////////////////////////////////////////////////////////////////////////
+    // 数字身份静态 view 函数 /////////////////////////////////////////////////////////////////////////////////////////
 
-    /// @notice Checks if the passed EIN exists.
-    /// @dev Does not throw.
-    /// @param ein The EIN to check the existence of.
-    /// @return true if the passed EIN exists, false otherwise.
+    /// @notice 检查传入的EIN是否存在。
+    /// @dev 不会抛出异常。
+    /// @param ein 要被检查是否存在的EIN
+    /// @return 如果EIN存在返回 true 否则返回 false
     function identityExists(uint ein) public view returns (bool) {
         return ein < nextEIN && ein > 0;
     }
 
-    /// @dev Ensures that the passed EIN exists.
-    /// @param ein The EIN to check the existence of.
+    /// @dev 确保传入的EIN存在。
+    /// @param ein 要被检查是否存在的EIN
     modifier _identityExists(uint ein) {
         require(identityExists(ein), "The identity does not exist.");
         _;
     }
 
-    /// @notice Checks if the passed address is associated with an Identity.
-    /// @dev Does not throw.
-    /// @param _address The address to check.
-    /// @return true if the passed address is associated with an Identity, false otherwise.
+    /// @notice 检查一个传入的地址是否与一个身份`Identity`相关联，即是否为一个身份的关联地址。
+    /// @dev 不会抛出异常。
+    /// @param _address 要被检查的地址。
+    /// @return 如果是一个身份的关联地址返回 true 否则返回 false
     function hasIdentity(address _address) public view returns (bool) {
         return identityExists(associatedAddressDirectory[_address]);
     }
 
-    /// @dev Ensures that the passed address is or is not associated with an Identity.
-    /// @param _address The address to check.
-    /// @param check If true, ensures that the address has an Identity, if false, vice versa.
-    /// @return true if the associated status is equal to check, false otherwise.
+    /// @dev 确保一个传入的地址是否与一个身份`Identity`相关联，即是否为一个身份的关联地址。
+    /// @param _address 要被检查的地址。
+    /// @param check 传入 true 确保地址与一个身份相关联，传入 false 则反之。
+    /// @return 如果关联状态等于`check`返回 true 否则返回 false
     modifier _hasIdentity(address _address, bool check) {
         require(
             hasIdentity(_address) == check,
@@ -117,52 +118,52 @@ contract IdentityRegistry is SignatureVerifier {
         _;
     }
 
-    /// @notice Gets the EIN associated with the passed address.
-    /// @dev Throws if the address is not associated with an Identity.
-    /// @param _address The address to check.
-    /// @return The associated EIN.
+    /// @notice 获取与传入地址相关联的EIN
+    /// @dev 如果传入的地址没有与任何一个身份相关联则抛出异常。
+    /// @param _address 待检查的地址。
+    /// @return 相关联的EIN
     function getEIN(address _address) public view _hasIdentity(_address, true) returns (uint ein) {
         return associatedAddressDirectory[_address];
     }
 
-    /// @notice Checks whether the passed EIN is associated with the passed address.
-    /// @dev Does not throw.
-    /// @param ein The EIN to check.
-    /// @param _address The address to check.
-    /// @return true if the passed address is associated with the passed EIN, false otherwise.
+    /// @notice 检查传入的EIN是否和传入的地址相关联，即传入的地址是否为传入EIN的关联地址。
+    /// @dev 不会抛出异常。
+    /// @param ein 待检查的EIN
+    /// @param _address 待检查的地址。
+    /// @return 如果传入的EIN和传入的地址相关联返回 true 否则返回 false
     function isAssociatedAddressFor(uint ein, address _address) public view returns (bool) {
         return identityDirectory[ein].associatedAddresses.contains(_address);
     }
 
-    /// @notice Checks whether the passed provider is set for the passed EIN.
-    /// @dev Does not throw.
-    /// @param ein The EIN to check.
-    /// @param provider The provider to check.
-    /// @return true if the provider is set for the passed EIN, false otherwise.
+    /// @notice 检查传入的`Provider`是否被设置给了传入的EIN
+    /// @dev 不会抛出异常。
+    /// @param ein 待检查的EIN
+    /// @param provider 待检查的`Provider`
+    /// @return 如果`Provider`被设置给了EIN返回 true 否则返回 false
     function isProviderFor(uint ein, address provider) public view returns (bool) {
         return identityDirectory[ein].providers.contains(provider);
     }
 
-    /// @dev Ensures that the msg.sender is a provider for the passed EIN.
-    /// @param ein The EIN to check.
+    /// @dev 确保`msg.sender`被设置给了EIN
+    /// @param ein 待检查的EIN
     modifier _isProviderFor(uint ein) {
         require(isProviderFor(ein, msg.sender), "The identity has not set the passed provider.");
         _;
     }
 
-    /// @notice Checks whether the passed resolver is set for the passed EIN.
-    /// @dev Does not throw.
-    /// @param ein The EIN to check.
-    /// @param resolver The resolver to check.
-    /// @return true if the resolver is set for the passed EIN, false otherwise.
+    /// @notice 检查传入的`Provider`是否被设置给了传入的EIN
+    /// @dev 不会抛出异常
+    /// @param ein 待检查的EIN
+    /// @param resolver 待检查的`Provider`
+    /// @return 如果传入的`Provider`被设置给了传入的EIN返回 true 否则返回 false
     function isResolverFor(uint ein, address resolver) public view returns (bool) {
         return identityDirectory[ein].resolvers.contains(resolver);
     }
 
-    /// @notice Gets all identity-related information for the passed EIN.
-    /// @dev Throws if the passed EIN does not exist.
-    /// @param ein The EIN to get information for.
-    /// @return All the information for the Identity denominated by the passed EIN.
+    /// @notice 获取传入的EIN身份的所有相关信息。
+    /// @dev 如果传入的EIN不存在则抛出异常。
+    /// @param ein 要获取信息的EIN
+    /// @return 所有跟传入EIN的身份相关联的信息。
     function getIdentity(uint ein) public view _identityExists(ein)
         returns (
             address recoveryAddress,
