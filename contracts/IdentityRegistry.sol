@@ -487,24 +487,24 @@ contract IdentityRegistry is SignatureVerifier {
     }
 
 
-    // Recovery Management Functions ///////////////////////////////////////////////////////////////////////////////////
+    // 身份恢复管理函数 ///////////////////////////////////////////////////////////////////////////////////
 
-    /// @notice Allows an associated address to change the recovery address for its Identity.
-    /// @dev Recovery addresses can be changed at most once every recoveryTimeout seconds.
-    /// @param newRecoveryAddress A recovery address to set for the sender's EIN.
+    /// @notice 允许一个管理地址改变它的身份的恢复地址。
+    /// @dev 每`recoveryTimeout`秒内最多可以更改一次恢复地址。
+    /// @param newRecoveryAddress 要被设为交易发送者身份的新恢复地址的地址。
     function triggerRecoveryAddressChange(address newRecoveryAddress) public {
         triggerRecoveryAddressChange(getEIN(msg.sender), newRecoveryAddress, false);
     }
 
-    /// @notice Allows providers to change the recovery address for an Identity.
-    /// @dev Recovery addresses can be changed at most once every recoveryTimeout seconds.
-    /// @param ein The EIN to set the recovery address of.
-    /// @param newRecoveryAddress A recovery address to set for the passed EIN.
+    /// @notice 允许`Provider`修改某个身份的恢复地址。
+    /// @dev 每`recoveryTimeout`秒内最多可以更改一次恢复地址。
+    /// @param ein 要被重设恢复地址的EIN
+    /// @param newRecoveryAddress 要被设为传入的EIN的新恢复地址的地址。
     function triggerRecoveryAddressChangeFor(uint ein, address newRecoveryAddress) public _isProviderFor(ein) {
         triggerRecoveryAddressChange(ein, newRecoveryAddress, true);
     }
 
-    /// @dev Common logic for all recovery address changes.
+    /// @dev 恢复地址更改的通用逻辑。
     function triggerRecoveryAddressChange(uint ein, address newRecoveryAddress, bool delegated) private {
         Identity storage _identity = identityDirectory[ein];
 
@@ -518,21 +518,21 @@ contract IdentityRegistry is SignatureVerifier {
         _identity.recoveryAddress = newRecoveryAddress;
     }
 
-    /// @notice Allows recovery addresses to trigger the recovery process for an Identity.
-    /// @dev msg.sender must be current recovery address, or the old one if it was changed recently.
-    /// @param ein The EIN to trigger recovery for.
-    /// @param newAssociatedAddress A recovery address to set for the passed EIN.
-    /// @param v The v component of the signature.
-    /// @param r The r component of the signature.
-    /// @param s The s component of the signature.
-    /// @param timestamp The timestamp of the signature.
+    /// @notice 允许恢复地址触发它的身份的恢复流程。
+    /// @dev `msg.sender`必须是身份的当前恢复地址，或者是最近被更改的上一个恢复地址。
+    /// @param ein 要被触发恢复流程的EIN
+    /// @param newAssociatedAddress 要被设为传入的EIN的新恢复地址的地址。
+    /// @param v 签名的v值。
+    /// @param r 签名的r值。
+    /// @param s 签名的s值。
+    /// @param timestamp 签名的时间戳。
     function triggerRecovery(uint ein, address newAssociatedAddress, uint8 v, bytes32 r, bytes32 s, uint timestamp)
         public _identityExists(ein) _hasIdentity(newAssociatedAddress, false) ensureSignatureTimeValid(timestamp)
     {
         require(canRecover(ein), "Cannot trigger recovery yet.");
         Identity storage _identity = identityDirectory[ein];
 
-        // ensure the sender is the recovery address/old recovery address if there's been a recent change
+        // 确保发送者是身份的当前恢复地址，或者是最近被更改的上一个恢复地址。
         if (canChangeRecoveryAddress(ein)) {
             require(
                 msg.sender == _identity.recoveryAddress, "Only the current recovery address can trigger recovery."
@@ -559,7 +559,7 @@ contract IdentityRegistry is SignatureVerifier {
             "Permission denied."
         );
 
-        // log the old associated addresses to facilitate destruction if necessary
+        // 记录记录旧的关联地址，以便在必要时进行身份销毁
         recoveryLogs[ein] = Recovery(
             block.timestamp, // solium-disable-line security/no-block-members
             keccak256(abi.encodePacked(_identity.associatedAddresses.members))
@@ -567,23 +567,23 @@ contract IdentityRegistry is SignatureVerifier {
 
         emit RecoveryTriggered(msg.sender, ein, _identity.associatedAddresses.members, newAssociatedAddress);
 
-        // remove identity data, and add the new address as the sole associated address
+        // 删除身份数据，并将新地址添加为唯一的关联地址
         resetIdentityData(_identity, msg.sender, false);
         addAssociatedAddress(ein, newAssociatedAddress);
     }
 
-    /// @notice Allows associated addresses recently removed via recovery to permanently disable their old Identity.
-    /// @param ein The EIN to trigger destruction of.
-    /// @param firstChunk The array of addresses before the msg.sender in the pre-recovery associated addresses array.
-    /// @param lastChunk The array of addresses after the msg.sender in the pre-recovery associated addresses array.
-    /// @param resetResolvers true if the destroyer wants resolvers to be removed, false otherwise.
+    /// @notice 允许最近被恢复流程删除的关联地址永久禁用其旧的身份。
+    /// @param ein 要被销毁的数字身份的EIN
+    /// @param firstChunk 恢复流程触发前，身份关联地址数组中`msg.sender`之前的关联地址数组。
+    /// @param lastChunk 恢复流程触发前，身份关联地址数组中`msg.sender`之后的关联地址数组。
+    /// @param resetResolvers 如果身份要删除`Resolver`设为 true 否则设为 false
     function triggerDestruction(uint ein, address[] memory firstChunk, address[] memory lastChunk, bool resetResolvers)
         public _identityExists(ein)
     {
         require(!canRecover(ein), "Recovery has not recently been triggered.");
         Identity storage _identity = identityDirectory[ein];
 
-        // ensure that the msg.sender was an old associated address for the referenced identity
+        // 确保`msg.sender`是EIN引用身份的旧关联地址
         address payable[1] memory middleChunk = [msg.sender];
         require(
             keccak256(
@@ -597,7 +597,7 @@ contract IdentityRegistry is SignatureVerifier {
         resetIdentityData(_identity, address(0), resetResolvers);
     }
 
-    /// @dev Common logic for clearing the data of an Identity.
+    /// @dev 清除身份数据的通用逻辑。
     function resetIdentityData(Identity storage identity, address newRecoveryAddress, bool resetResolvers) private {
         for (uint i; i < identity.associatedAddresses.members.length; i++) {
             delete associatedAddressDirectory[identity.associatedAddresses.members[i]];
@@ -609,7 +609,7 @@ contract IdentityRegistry is SignatureVerifier {
     }
 
 
-    // Events //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // 事件 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     event IdentityCreated(
         address indexed initiator, uint indexed ein,
