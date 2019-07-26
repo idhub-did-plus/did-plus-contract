@@ -181,30 +181,30 @@ contract IdentityRegistry is SignatureVerifier {
     }
 
 
-    // Identity Management Functions ///////////////////////////////////////////////////////////////////////////////////
+    // 身份管理函数 ///////////////////////////////////////////////////////////////////////////////////
 
-    /// @notice Create an new Identity for the transaction sender.
-    /// @dev Sets the msg.sender as the only associatedAddress.
-    /// @param recoveryAddress A recovery address to set for the new Identity.
-    /// @param providers A list of providers to set for the new Identity.
-    /// @param resolvers A list of resolvers to set for the new Identity.
-    /// @return The EIN of the new Identity.
+    /// @notice 为以太坊交易发起人创建一个数字身份。
+    /// @dev 设置`msg.sender`为唯一的关联地址。
+    /// @param recoveryAddress 新建数字身份的恢复地址。
+    /// @param providers 新建数字身份的`Provider`数组。
+    /// @param resolvers 新建数字身份的`Resolver`数组。
+    /// @return 新建数字身份的EIN
     function createIdentity(address recoveryAddress, address[] memory providers, address[] memory resolvers)
         public returns (uint ein)
     {
         return createIdentity(recoveryAddress, msg.sender, providers, resolvers, false);
     }
 
-    /// @notice Allows creation of a new Identity for the passed associatedAddress.
-    /// @param recoveryAddress A recovery address to set for the new Identity.
-    /// @param associatedAddress An associated address to set for the new Identity (must have produced the signature).
-    /// @param providers A list of providers to set for the new Identity.
-    /// @param resolvers A list of resolvers to set for the new Identity.
-    /// @param v The v component of the signature.
-    /// @param r The r component of the signature.
-    /// @param s The s component of the signature.
-    /// @param timestamp The timestamp of the signature.
-    /// @return The EIN of the new Identity.
+    /// @notice 允许为传入的关联地址新建一个数字身份。
+    /// @param recoveryAddress 新建数字身份的恢复地址。
+    /// @param associatedAddress 新建数字身份的一个关联地址（必须由此地址产生签名）。
+    /// @param providers 新建数字身份的`Provider`数组。
+    /// @param resolvers 新建数字身份的`Resolver`数组。
+    /// @param v 签名的v值。
+    /// @param r 签名的r值。
+    /// @param s 签名的s值。
+    /// @param timestamp 签名的时间戳。
+    /// @return 新建数字身份的EIN
     function createIdentityDelegated(
         address recoveryAddress, address associatedAddress, address[] memory providers, address[] memory resolvers,
         uint8 v, bytes32 r, bytes32 s, uint timestamp
@@ -229,7 +229,7 @@ contract IdentityRegistry is SignatureVerifier {
         return createIdentity(recoveryAddress, associatedAddress, providers, resolvers, true);
     }
 
-    /// @dev Common logic for all identity creation.
+    /// @dev 所有身份创建的通用逻辑。
     function createIdentity(
         address recoveryAddress,
         address associatedAddress, address[] memory providers, address[] memory resolvers, bool delegated
@@ -250,13 +250,13 @@ contract IdentityRegistry is SignatureVerifier {
     }
 
 
-    /// @notice Allows an associated address to add another associated address to its Identity.
-    /// @param approvingAddress An associated address for an Identity.
-    /// @param addressToAdd A new address to set for the Identity of the sender.
-    /// @param v The v component of the signature.
-    /// @param r The r component of the signature.
-    /// @param s The s component of the signature.
-    /// @param timestamp The timestamp of the signature.
+    /// @notice 允许一个关联地址将一个地址添加为它的数字身份的另一个关联地址。
+    /// @param approvingAddress 一个数字身份的关联地址。
+    /// @param addressToAdd 添加为发送者数字身份的关联地址的地址。
+    /// @param v 签名的v值。
+    /// @param r 签名的r值。
+    /// @param s 签名的s值。
+    /// @param timestamp 签名的时间戳。
     function addAssociatedAddress(
         address approvingAddress, address addressToAdd, uint8 v, bytes32 r, bytes32 s, uint timestamp
     )
@@ -291,14 +291,14 @@ contract IdentityRegistry is SignatureVerifier {
         emit AssociatedAddressAdded(msg.sender, ein, approvingAddress, addressToAdd, false);
     }
 
-    /// @notice Allows addition of an associated address to an Identity.
-    /// @dev The first signature must be that of the approvingAddress.
-    /// @param approvingAddress An associated address for an Identity.
-    /// @param addressToAdd A new address to set for the Identity of approvingAddress.
-    /// @param v The v component of the signatures.
-    /// @param r The r component of the signatures.
-    /// @param s The s component of the signatures.
-    /// @param timestamp The timestamp of the signatures.
+    /// @notice 允许添加一个地址成为一个数字身份的关联地址。
+    /// @dev 第一个签名必须是`approvingAddress`的签名。
+    /// @param approvingAddress 一个数字身份的关联地址。
+    /// @param addressToAdd 要被设置为`approvingAddress`的数字身份的新关联地址的地址。
+    /// @param v 签名的v值。
+    /// @param r 签名的r值。
+    /// @param s 签名的s值。
+    /// @param timestamp 签名的时间戳。
     function addAssociatedAddressDelegated(
         address approvingAddress, address addressToAdd,
         uint8[2] memory v, bytes32[2] memory r, bytes32[2] memory s, uint[2] memory timestamp
@@ -341,7 +341,7 @@ contract IdentityRegistry is SignatureVerifier {
         emit AssociatedAddressAdded(msg.sender, ein, approvingAddress, addressToAdd, true);
     }
 
-    /// @dev Common logic for all address addition.
+    /// @dev 所有地址添加的通用逻辑。
     function addAssociatedAddress(uint ein, address addressToAdd) private _hasIdentity(addressToAdd, false) {
         require(
             identityDirectory[ein].associatedAddresses.length() < maxAssociatedAddresses, "Too many addresses."
@@ -351,7 +351,7 @@ contract IdentityRegistry is SignatureVerifier {
         associatedAddressDirectory[addressToAdd] = ein;
     }
 
-    /// @notice Allows an associated address to remove itself from its Identity.
+    /// @notice 允许解除以太坊交易发送地址的和自己数字身份的关联性。
     function removeAssociatedAddress() public {
         uint ein = getEIN(msg.sender);
 
@@ -360,12 +360,12 @@ contract IdentityRegistry is SignatureVerifier {
         emit AssociatedAddressRemoved(msg.sender, ein, msg.sender, false);
     }
 
-    /// @notice Allows removal of an associated address from an Identity.
-    /// @param addressToRemove An associated address to remove from its Identity.
-    /// @param v The v component of the signature.
-    /// @param r The r component of the signature.
-    /// @param s The s component of the signature.
-    /// @param timestamp The timestamp of the signature.
+    /// @notice 允许从一个身份删除一个关联地址。
+    /// @param addressToRemove 要从身份删除的关联地址。
+    /// @param v 签名的v值。
+    /// @param r 签名的r值。
+    /// @param s 签名的s值。
+    /// @param timestamp 签名的时间戳。
     function removeAssociatedAddressDelegated(address addressToRemove, uint8 v, bytes32 r, bytes32 s, uint timestamp)
         public ensureSignatureTimeValid(timestamp)
     {
@@ -391,27 +391,27 @@ contract IdentityRegistry is SignatureVerifier {
         emit AssociatedAddressRemoved(msg.sender, ein, addressToRemove, true);
     }
 
-    /// @dev Common logic for all address removal.
+    /// @dev 删除地址的通用逻辑。
     function removeAssociatedAddress(uint ein, address addressToRemove) private {
         identityDirectory[ein].associatedAddresses.remove(addressToRemove);
         delete associatedAddressDirectory[addressToRemove];
     }
 
 
-    /// @notice Allows an associated address to add providers to its Identity.
-    /// @param providers A list of providers.
+    /// @notice 允许一个关联地址为它的身份添加一组`Provider`
+    /// @param providers `Provider`数组。
     function addProviders(address[] memory providers) public {
         addProviders(getEIN(msg.sender), providers, false);
     }
 
-    /// @notice Allows providers to add providers to an Identity.
-    /// @param ein The EIN to add providers to.
-    /// @param providers A list of providers.
+    /// @notice 允许`Provider`为它的数字身份添加`Provider`
+    /// @param ein 要被添加`Provdier`的EIN
+    /// @param providers `Provider`数组。
     function addProvidersFor(uint ein, address[] memory providers) public _isProviderFor(ein) {
         addProviders(ein, providers, true);
     }
 
-    /// @dev Common logic for all provider adding.
+    /// @dev `Provider`添加的通用逻辑。
     function addProviders(uint ein, address[] memory providers, bool delegated) private {
         Identity storage _identity = identityDirectory[ein];
         for (uint i; i < providers.length; i++) {
@@ -420,20 +420,20 @@ contract IdentityRegistry is SignatureVerifier {
         }
     }
 
-    /// @notice Allows an associated address to remove providers from its Identity.
-    /// @param providers A list of providers.
+    /// @notice 允许一个关联地址为它的身份删除一组`Provider`
+    /// @param providers `Provider`数组。
     function removeProviders(address[] memory providers) public {
         removeProviders(getEIN(msg.sender), providers, false);
     }
 
-    /// @notice Allows providers to remove providers to an Identity.
-    /// @param ein The EIN to remove providers from.
-    /// @param providers A list of providers.
+    /// @notice 允许`Provider`为它的数字身份删除`Provider`
+    /// @param ein 要被删除`Provdier`的EIN
+    /// @param providers `Provider`数组。
     function removeProvidersFor(uint ein, address[] memory providers) public _isProviderFor(ein) {
         removeProviders(ein, providers, true);
     }
 
-    /// @dev Common logic for all provider removal.
+    /// @dev `Provider`删除的通用逻辑。
     function removeProviders(uint ein, address[] memory providers, bool delegated) private {
         Identity storage _identity = identityDirectory[ein];
         for (uint i; i < providers.length; i++) {
@@ -442,20 +442,20 @@ contract IdentityRegistry is SignatureVerifier {
         }
     }
 
-    /// @notice Allows an associated address to add resolvers to its Identity.
-    /// @param resolvers A list of resolvers.
+    /// @notice 允许一个关联地址为它的身份添加一组`Resolver`
+    /// @param resolvers `Resolver`数组。
     function addResolvers(address[] memory resolvers) public {
         addResolvers(getEIN(msg.sender), resolvers, false);
     }
 
-    /// @notice Allows providers to add resolvers to an Identity.
-    /// @param ein The EIN to add resolvers to.
-    /// @param resolvers A list of resolvers.
+    /// @notice 允许`Provider`为某个身份添加一组`Resolver`
+    /// @param ein 要被添加`Resolver`的EIN
+    /// @param resolvers `Resolver`数组。
     function addResolversFor(uint ein, address[] memory resolvers) public _isProviderFor(ein) {
         addResolvers(ein, resolvers, true);
     }
 
-    /// @dev Common logic for all resolver adding.
+    /// @dev `Resolver`添加的通用逻辑。
     function addResolvers(uint ein, address[] memory resolvers, bool delegated) private {
         Identity storage _identity = identityDirectory[ein];
         for (uint i; i < resolvers.length; i++) {
@@ -464,20 +464,20 @@ contract IdentityRegistry is SignatureVerifier {
         }
     }
 
-    /// @notice Allows an associated address to remove resolvers from its Identity.
-    /// @param resolvers A list of resolvers.
+    /// @notice 允许一个关联地址为它的身份删除一组`Resolver`
+    /// @param resolvers `Resolver`数组。
     function removeResolvers(address[] memory resolvers) public {
         removeResolvers(getEIN(msg.sender), resolvers, true);
     }
 
-    /// @notice Allows providers to remove resolvers from an Identity.
-    /// @param ein The EIN to remove resolvers from.
-    /// @param resolvers A list of resolvers.
+    /// @notice 允许`Provider`为某个身份删除一组`Resolver`
+    /// @param ein 要被删除`Resolver`的EIN
+    /// @param resolvers `Resolver`数组。
     function removeResolversFor(uint ein, address[] memory resolvers) public _isProviderFor(ein) {
         removeResolvers(ein, resolvers, true);
     }
 
-    /// @dev Common logic for all resolver removal.
+    /// @dev `Resolver`删除的通用逻辑。
     function removeResolvers(uint ein, address[] memory resolvers, bool delegated) private {
         Identity storage _identity = identityDirectory[ein];
         for (uint i; i < resolvers.length; i++) {
