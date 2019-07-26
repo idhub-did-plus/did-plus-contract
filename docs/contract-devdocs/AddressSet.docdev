@@ -1,0 +1,6 @@
+{
+  "author" : "Noah Zinsmeister, Zaakin Yao",
+  "details" : "O(1)时间复杂度  插入、删除、集合判断、长度等函数",
+  "methods" : {},
+  "title" : "一种地址集合的数据结构实现。"
+}

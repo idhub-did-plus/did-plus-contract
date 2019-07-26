@@ -1,0 +1,9 @@
+{
+  "methods" : 
+  {
+    "isSigned(address,bytes32,uint8,bytes32,bytes32)" : 
+    {
+      "notice" : "校验传入的`messageHash`的签名是否由`_address`的私钥创建。"
+    }
+  }
+}

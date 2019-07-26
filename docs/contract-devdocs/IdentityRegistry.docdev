@@ -1,0 +1,247 @@
+{
+  "author" : "Noah Zinsmeister/Andy Chorlian/Zaakin Yao",
+  "methods" : 
+  {
+    "addAssociatedAddress(address,address,uint8,bytes32,bytes32,uint256)" : 
+    {
+      "params" : 
+      {
+        "addressToAdd" : "添加为发送者数字身份的关联地址的地址。",
+        "approvingAddress" : "一个数字身份的关联地址。",
+        "r" : "签名的r值。",
+        "s" : "签名的s值。",
+        "timestamp" : "签名的时间戳。",
+        "v" : "签名的v值。"
+      }
+    },
+    "addAssociatedAddressDelegated(address,address,uint8[2],bytes32[2],bytes32[2],uint256[2])" : 
+    {
+      "details" : "第一个签名必须是`approvingAddress`的签名。",
+      "params" : 
+      {
+        "addressToAdd" : "要被设置为`approvingAddress`的数字身份的新关联地址的地址。",
+        "approvingAddress" : "一个数字身份的关联地址。",
+        "r" : "签名的r值。",
+        "s" : "签名的s值。",
+        "timestamp" : "签名的时间戳。",
+        "v" : "签名的v值。"
+      }
+    },
+    "addProviders(address[])" : 
+    {
+      "params" : 
+      {
+        "providers" : "`Provider`数组。"
+      }
+    },
+    "addProvidersFor(uint256,address[])" : 
+    {
+      "params" : 
+      {
+        "ein" : "要被添加`Provdier`的EIN",
+        "providers" : "`Provider`数组。"
+      }
+    },
+    "addResolvers(address[])" : 
+    {
+      "params" : 
+      {
+        "resolvers" : "`Resolver`数组。"
+      }
+    },
+    "addResolversFor(uint256,address[])" : 
+    {
+      "params" : 
+      {
+        "ein" : "要被添加`Resolver`的EIN",
+        "resolvers" : "`Resolver`数组。"
+      }
+    },
+    "createIdentity(address,address[],address[])" : 
+    {
+      "details" : "设置`msg.sender`为唯一的关联地址。",
+      "params" : 
+      {
+        "providers" : "新建数字身份的`Provider`数组。",
+        "recoveryAddress" : "新建数字身份的恢复地址。",
+        "resolvers" : "新建数字身份的`Resolver`数组。"
+      },
+      "return" : "新建数字身份的EIN"
+    },
+    "createIdentityDelegated(address,address,address[],address[],uint8,bytes32,bytes32,uint256)" : 
+    {
+      "params" : 
+      {
+        "associatedAddress" : "新建数字身份的一个关联地址（必须由此地址产生签名）。",
+        "providers" : "新建数字身份的`Provider`数组。",
+        "r" : "签名的r值。",
+        "recoveryAddress" : "新建数字身份的恢复地址。",
+        "resolvers" : "新建数字身份的`Resolver`数组。",
+        "s" : "签名的s值。",
+        "timestamp" : "签名的时间戳。",
+        "v" : "签名的v值。"
+      },
+      "return" : "新建数字身份的EIN"
+    },
+    "getEIN(address)" : 
+    {
+      "details" : "如果传入的地址没有与任何一个身份相关联则抛出异常。",
+      "params" : 
+      {
+        "_address" : "待检查的地址。"
+      },
+      "return" : "相关联的EIN"
+    },
+    "getIdentity(uint256)" : 
+    {
+      "details" : "如果传入的EIN不存在则抛出异常。",
+      "params" : 
+      {
+        "ein" : "要获取信息的EIN"
+      },
+      "return" : "所有跟传入EIN的身份相关联的信息。"
+    },
+    "hasIdentity(address)" : 
+    {
+      "details" : "不会抛出异常。",
+      "params" : 
+      {
+        "_address" : "要被检查的地址。"
+      },
+      "return" : "如果是一个身份的关联地址返回 true 否则返回 false"
+    },
+    "identityExists(uint256)" : 
+    {
+      "details" : "不会抛出异常。",
+      "params" : 
+      {
+        "ein" : "要被检查是否存在的EIN"
+      },
+      "return" : "如果EIN存在返回 true 否则返回 false"
+    },
+    "isAssociatedAddressFor(uint256,address)" : 
+    {
+      "details" : "不会抛出异常。",
+      "params" : 
+      {
+        "_address" : "待检查的地址。",
+        "ein" : "待检查的EIN"
+      },
+      "return" : "如果传入的EIN和传入的地址相关联返回 true 否则返回 false"
+    },
+    "isProviderFor(uint256,address)" : 
+    {
+      "details" : "不会抛出异常。",
+      "params" : 
+      {
+        "ein" : "待检查的EIN",
+        "provider" : "待检查的`Provider`"
+      },
+      "return" : "如果`Provider`被设置给了EIN返回 true 否则返回 false"
+    },
+    "isResolverFor(uint256,address)" : 
+    {
+      "details" : "不会抛出异常",
+      "params" : 
+      {
+        "ein" : "待检查的EIN",
+        "resolver" : "待检查的`Provider`"
+      },
+      "return" : "如果传入的`Provider`被设置给了传入的EIN返回 true 否则返回 false"
+    },
+    "isSigned(address,bytes32,uint8,bytes32,bytes32)" : 
+    {
+      "params" : 
+      {
+        "_address" : "待校验的是否正确签名了`messageHash`的地址。",
+        "messageHash" : "待校验的是否被正确签名的`messageHash`。",
+        "r" : "签名的r值部分。",
+        "s" : "签名的s值部分。",
+        "v" : "签名的v值部分。"
+      },
+      "return" : "签名校验通过则返回 true 否则返回 false"
+    },
+    "removeAssociatedAddressDelegated(address,uint8,bytes32,bytes32,uint256)" : 
+    {
+      "params" : 
+      {
+        "addressToRemove" : "要从身份删除的关联地址。",
+        "r" : "签名的r值。",
+        "s" : "签名的s值。",
+        "timestamp" : "签名的时间戳。",
+        "v" : "签名的v值。"
+      }
+    },
+    "removeProviders(address[])" : 
+    {
+      "params" : 
+      {
+        "providers" : "`Provider`数组。"
+      }
+    },
+    "removeProvidersFor(uint256,address[])" : 
+    {
+      "params" : 
+      {
+        "ein" : "要被删除`Provdier`的EIN",
+        "providers" : "`Provider`数组。"
+      }
+    },
+    "removeResolvers(address[])" : 
+    {
+      "params" : 
+      {
+        "resolvers" : "`Resolver`数组。"
+      }
+    },
+    "removeResolversFor(uint256,address[])" : 
+    {
+      "params" : 
+      {
+        "ein" : "要被删除`Resolver`的EIN",
+        "resolvers" : "`Resolver`数组。"
+      }
+    },
+    "triggerDestruction(uint256,address[],address[],bool)" : 
+    {
+      "params" : 
+      {
+        "ein" : "要被销毁的数字身份的EIN",
+        "firstChunk" : "恢复流程触发前，身份关联地址数组中`msg.sender`之前的关联地址数组。",
+        "lastChunk" : "恢复流程触发前，身份关联地址数组中`msg.sender`之后的关联地址数组。",
+        "resetResolvers" : "如果身份要删除`Resolver`设为 true 否则设为 false"
+      }
+    },
+    "triggerRecovery(uint256,address,uint8,bytes32,bytes32,uint256)" : 
+    {
+      "details" : "`msg.sender`必须是身份的当前恢复地址，或者是最近被更改的上一个恢复地址。",
+      "params" : 
+      {
+        "ein" : "要被触发恢复流程的EIN",
+        "newAssociatedAddress" : "要被设为传入的EIN的新恢复地址的地址。",
+        "r" : "签名的r值。",
+        "s" : "签名的s值。",
+        "timestamp" : "签名的时间戳。",
+        "v" : "签名的v值。"
+      }
+    },
+    "triggerRecoveryAddressChange(address)" : 
+    {
+      "details" : "每`recoveryTimeout`秒内最多可以更改一次恢复地址。",
+      "params" : 
+      {
+        "newRecoveryAddress" : "要被设为交易发送者身份的新恢复地址的地址。"
+      }
+    },
+    "triggerRecoveryAddressChangeFor(uint256,address)" : 
+    {
+      "details" : "每`recoveryTimeout`秒内最多可以更改一次恢复地址。",
+      "params" : 
+      {
+        "ein" : "要被重设恢复地址的EIN",
+        "newRecoveryAddress" : "要被设为传入的EIN的新恢复地址的地址。"
+      }
+    }
+  },
+  "title" : "The ERC-1484 Identity Registry."
+}

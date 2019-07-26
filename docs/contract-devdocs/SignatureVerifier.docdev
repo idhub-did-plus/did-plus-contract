@@ -1,0 +1,20 @@
+{
+  "author" : "Noah Zinsmeister, Zaakin Yao",
+  "details" : "同时支持有前缀和无前缀的签名。",
+  "methods" : 
+  {
+    "isSigned(address,bytes32,uint8,bytes32,bytes32)" : 
+    {
+      "params" : 
+      {
+        "_address" : "待校验的是否正确签名了`messageHash`的地址。",
+        "messageHash" : "待校验的是否被正确签名的`messageHash`。",
+        "r" : "签名的r值部分。",
+        "s" : "签名的s值部分。",
+        "v" : "签名的v值部分。"
+      },
+      "return" : "签名校验通过则返回 true 否则返回 false"
+    }
+  },
+  "title" : "提供检查传入签名有效性的帮助函数。"
+}
