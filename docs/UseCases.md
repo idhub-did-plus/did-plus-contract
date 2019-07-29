@@ -96,4 +96,32 @@ ERC1484提供了将多个关联地址`associatedAddress`映射到同一个`EIN`�
 ```
 关联地址主动调用`removeAssociatedAddress`发送交易则移除与自己对应的数字身份的绑定关系，授权别人调用`removeAssociatedAddressDelegated`则需要关联地址签名的`v, r, s`值。
 
-## 链上申明验证
+## 链上声明验证
+
+ERC780提供了在以太坊区块链上读写`claim`声明的功能。声明代表对用户身份的某种属性的一种公开说明或认证，IDHub用于对数字身份投资合规性的认证。
+
+### 链上声明发布
+
+通过调用`setClaim`函数可以实现链上声明的创建与更新。
+```solidity
+    function setClaim(address subject, bytes32 key, bytes32 value) public 
+```
+`subject`参数为声明接受者，或被声明认证的地址；`key`是声明的类型，命名参考[方案](https://github.com/ethereum/EIPs/issues/780)；`value`是声明的值，无具体限制。
+
+在数字身份投资合规性认证场景中，`subject`应设为被认证用户的ERC1056`identity`标识符地址；`key`应设为`keccak256('IDHub:compliantInvestor:countryOfResidency:Nationality')`，其中占位符；`value`应设为`left_padded_timestamp`，其中占位符。
+
+### 链上声明验证
+
+第三方合约依次通过调用`getEIN`、`einToDID`、`getClaim`可以对以太坊交易发送者完成一次链上声明的自动验证。
+```solidity
+	function getEIN(address _address) public view _hasIdentity(_address, true) returns (uint ein) 
+
+	mapping(uint => address) public einToDID;
+
+	function getClaim(address issuer, address subject, bytes32 key) public view returns(bytes32) 
+```
+用户通过某个关联地址`associatedAddress`调用第三方合约，第三方合约通过`getEIN(associatedAddress)`查到用户的`EIN`，然后通过`einToDID(EIN)`查到用户的ERC1056`identity`地址（即用户的`ethr-did`地址），最后通过`getClaim(issuer, identity, key)`函数另外传入预期的`issuer`和`key`得到声明的`value`值，检查`value`值是否符合预期即可完成声明的验证。
+
+
+
+
