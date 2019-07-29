@@ -30,7 +30,7 @@ ERC1484提供了身份创建、恢复`EIN`，ERC1056默认自动为用户注册`
         return identity;
     }
 ```
-`createIdentity`的交易发起地址为`associatedAddress`或者`createIdentityDelegated`函数的`v, r, s`参数值来自于参数`associatedAddress`的签名。在创建身份步骤里，前面所述的`associatedAddress`会在ERC1056中默认被注册为`identity`。恢复地址`recoveryAddress`对应的私钥应该被冷存储用于特殊情况发生时找回`EIN`的控制权。
+`createIdentity`的交易发起地址为`associatedAddress`或者`createIdentityDelegated`函数的`v, r, s`参数值来自于参数`associatedAddress`的签名。在创建身份步骤里，前面所述的`associatedAddress`会在ERC1056中默认被注册为`identity`。恢复地址`recoveryAddress`对应的私钥应该被冷存储用于特殊情况发生时找回`EIN`的控制权。ERC1056的地址应该作为`Resolver`之一传入。
 
 ### 身份找回
 
@@ -65,5 +65,35 @@ ERC1484提供了身份创建、恢复`EIN`，ERC1056默认自动为用户注册`
 ## 密钥轮换管理
 
 ERC1484提供了将多个关联地址`associatedAddress`映射到同一个`EIN`的功能。
+
+### 关联地址增加
+
+用户可以直接或授权签名为自己的`EIN`绑定关联地址，每个`EIN`的关联地址数量没有限制。
+```solidity
+    function addAssociatedAddress(
+        address approvingAddress, address addressToAdd, uint8 v, bytes32 r, bytes32 s, uint timestamp
+    )
+        public ensureSignatureTimeValid(timestamp)
+
+
+    // Or
+    function addAssociatedAddressDelegated(
+        address approvingAddress, address addressToAdd,
+        uint8[2] memory v, bytes32[2] memory r, bytes32[2] memory s, uint[2] memory timestamp
+    )
+        public ensureSignatureTimeValid(timestamp[0]) ensureSignatureTimeValid(timestamp[1])
+```
+`approvingAddress`是`EIN`的已有关联地址之一，`addressToAdd`是要被添加的关联地址。用户直接调用`addAssociatedAddress`函数的交易发送者必须是其中之一且需要来自另一地址的签名的`v, r, s`值。如果签名授权调用`addAssociatedAddressDelegated`的函数则同时需要两个地址的签名的`v, r, s`值，数组顺序和参数顺序一致。
+
+### 关联地址删除
+
+用户的一个关联地址可以直接或签名授权和用户的数字身份移除绑定关系。
+```solidity
+	function removeAssociatedAddress() public
+
+	function removeAssociatedAddressDelegated(address addressToRemove, uint8 v, bytes32 r, bytes32 s, uint timestamp)
+        public ensureSignatureTimeValid(timestamp)
+```
+关联地址主动调用`removeAssociatedAddress`发送交易则移除与自己对应的数字身份的绑定关系，授权别人调用`removeAssociatedAddressDelegated`则需要关联地址签名的`v, r, s`值。
 
 ## 链上申明验证
