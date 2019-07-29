@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-import "../../../interfaces/IdentityRegistryInterface.sol";
+import "../interfaces/IdentityRegistryInterface.sol";
 import "./EthereumDIDRegistryInterface.sol";
 
 contract ERC1056 {
