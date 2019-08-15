@@ -20,6 +20,23 @@ contract ERC1056 {
         require(einToDID[ein] == address(0), "This EIN has already been initialized");
         ethereumDIDRegistry.changeOwnerSigned(identity, v, r, s, address(this));
         einToDID[ein] = identity;
+        emit IdentityInitialized(msg.sender, ein, identity);
+    }
+
+    function clear() public {
+        uint ein = identityRegistry.getEIN(msg.sender);
+        require(einToDID[ein] != address(0), "This EIN has not been initialized");
+        einToDID[ein] = address(0);
+        emit IdentityCleared(msg.sender, ein);
+    }
+
+    function reset(address newIdentity, uint8 v, bytes32 r, bytes32 s) public {
+        uint ein = identityRegistry.getEIN(msg.sender);
+        require(einToDID[ein] != address(0), "This EIN has not been initialized");
+        address oldIdentity = einToDID[ein];
+        ethereumDIDRegistry.changeOwnerSigned(newIdentity, v, r, s, address(this));
+        einToDID[ein] = newIdentity;
+        emit IdentityCleared(msg.sender, ein, oldIdentity, newIndeitity);
     }
 
     function changeOwner(address newOwner) public {
@@ -181,4 +198,10 @@ contract ERC1056 {
         require(_did != address(0), "This EIN has not been initialized");
         ethereumDIDRegistry.revokeAttribute(_did, _name, _value);
     }
+
+    event IdentityInitialized(address indexed initiator, uint indexed ein, address indexed indeitity)
+
+    event IdentityCleared(address indexed initiator, uint ein)
+
+    event IdentityReseted(address indexed initiator, uint indexed ein, address indexed oldIdentity, address newIndeitity)
 }
