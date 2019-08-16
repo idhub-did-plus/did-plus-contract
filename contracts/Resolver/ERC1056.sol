@@ -36,7 +36,7 @@ contract ERC1056 {
         address oldIdentity = einToDID[ein];
         ethereumDIDRegistry.changeOwnerSigned(newIdentity, v, r, s, address(this));
         einToDID[ein] = newIdentity;
-        emit IdentityCleared(msg.sender, ein, oldIdentity, newIndeitity);
+        emit IdentityReseted(msg.sender, ein, oldIdentity, newIdentity);
     }
 
     function changeOwner(address newOwner) public {
@@ -199,9 +199,9 @@ contract ERC1056 {
         ethereumDIDRegistry.revokeAttribute(_did, _name, _value);
     }
 
-    event IdentityInitialized(address indexed initiator, uint indexed ein, address indexed indeitity)
+    event IdentityInitialized(address indexed initiator, uint indexed ein, address indexed indeitity);
 
-    event IdentityCleared(address indexed initiator, uint ein)
+    event IdentityCleared(address indexed initiator, uint ein);
 
-    event IdentityReseted(address indexed initiator, uint indexed ein, address indexed oldIdentity, address newIndeitity)
+    event IdentityReseted(address indexed initiator, uint indexed ein, address indexed oldIdentity, address newIndeitity);
 }
