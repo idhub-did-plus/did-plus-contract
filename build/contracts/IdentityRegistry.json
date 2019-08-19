@@ -44927,9 +44927,16 @@
     "name": "solc",
     "version": "0.5.8+commit.23d335f2.Emscripten.clang"
   },
-  "networks": {},
+  "networks": {
+    "3": {
+      "events": {},
+      "links": {},
+      "address": "0xa12dd74A800e2fDD566E2B4Ec4160d4Bf996b8ef",
+      "transactionHash": "0x23b24921be5a6bf86979d19ab300b17c855f939f70bb26456dc22acb7826574d"
+    }
+  },
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-07-30T03:58:17.065Z",
+  "updatedAt": "2019-08-19T04:20:43.155Z",
   "devdoc": {
     "author": "Noah ZinsmeisterAndy ChorlianZaakin Yao",
     "methods": {

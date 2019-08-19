@@ -4062,9 +4062,16 @@
     "name": "solc",
     "version": "0.5.8+commit.23d335f2.Emscripten.clang"
   },
-  "networks": {},
+  "networks": {
+    "3": {
+      "events": {},
+      "links": {},
+      "address": "0x6b79c4A914f26da4b49Be240fBBC894eb8426e91",
+      "transactionHash": "0xca2b2ae37c9985bd13658c7efa4f5395338b3b1170b517d2d45385dec4b08f74"
+    }
+  },
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-07-30T03:58:17.062Z",
+  "updatedAt": "2019-08-19T04:20:43.196Z",
   "devdoc": {
     "author": "Noah Zinsmeister, Zaakin Yao",
     "details": "O(1)时间复杂度  插入、删除、集合判断、长度等函数",
