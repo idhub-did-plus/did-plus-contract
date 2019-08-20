@@ -20955,12 +20955,12 @@
     "3": {
       "events": {},
       "links": {},
-      "address": "0xf02C41372Ad19748AFaB55bd6A4BC4723fA0eB26",
-      "transactionHash": "0xc5cf40bdaadc4407cd984ab5af7d2755a6e1a243c95a14f93cad7c6ab4ed366b"
+      "address": "0x3b12CF47E6c5C930EF8F060E5a24e7B84Ce2AD7a",
+      "transactionHash": "0x3843793dee2e11bdda0ae848af4d2f0a5b8457d4682af6bb2c88040148502b16"
     }
   },
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-08-19T04:20:43.187Z",
+  "updatedAt": "2019-08-19T09:21:19.911Z",
   "devdoc": {
     "methods": {}
   },
