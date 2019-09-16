@@ -13,5 +13,5 @@ ERC-1484 reference implementation and ERC1056 indentity resolver.
 |      CONTRACT       |   ADDRESS   | 
 |  :----------------: | :---------- | 
 | whitelist           |0x992b7942da4f7193e6fd6c3ba7682c7cd6c6c6ab|
-| ERC1400             |0x70a0e5cd7cda6136c9f901a3de1d7c2c6b97908c|
+| ERC1400             |0xfeb471b930eb0962b2ff832ba75597e318b40fc7|
 
