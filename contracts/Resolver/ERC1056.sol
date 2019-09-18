@@ -39,6 +39,15 @@ contract ERC1056 {
         emit IdentityReseted(msg.sender, ein, oldIdentity, newIdentity);
     }
 
+    function recovery(address newIdentity, uint8 v, bytes32 r, bytes32 s) public {
+        uint ein = identityRegistry.getEIN(newIdentity);
+        require(einToDID[ein] != address(0), "This EIN has not been initialized");
+        address oldIdentity = einToDID[ein];
+        ethereumDIDRegistry.changeOwnerSigned(newIdentity, v, r, s, address(this));
+        einToDID[ein] = newIdentity;
+        emit IdentityReseted(oldIdentity, ein, oldIdentity, newIdentity);
+    }
+
     function changeOwner(address newOwner) public {
         uint ein = identityRegistry.getEIN(msg.sender);
         _changeOwner(einToDID[ein], newOwner);
