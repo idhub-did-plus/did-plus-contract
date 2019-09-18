@@ -44931,12 +44931,12 @@
     "3": {
       "events": {},
       "links": {},
-      "address": "0x65CE3A2616589b8b8887BAB845Dc5bD153Cb0e05",
-      "transactionHash": "0x2646b48f77db0f8339e02716df632850c1d38fafbf94f795ee86479349c8792a"
+      "address": "0x90e1B1C7B8C829b3d0b1C09eD961e46f5AeeD184",
+      "transactionHash": "0xd87ee2472c66d18c8434a717678932612b8fe3ef879223f8c7fcb3f4dae8ab1a"
     }
   },
   "schemaVersion": "3.0.11",
-  "updatedAt": "2019-08-19T09:21:19.872Z",
+  "updatedAt": "2019-09-18T03:40:39.633Z",
   "devdoc": {
     "author": "Noah ZinsmeisterAndy ChorlianZaakin Yao",
     "methods": {
